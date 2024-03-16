@@ -1,0 +1,227 @@
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = [ "multiSchema" ]
+  binaryTargets = [ "native", "linux-musl-openssl-3.0.x" ]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  schemas = [ "main", "football" ]
+}
+
+enum PlayerPos {
+  GK
+  FB
+  CB
+  DM
+  LM
+  AM
+  WG
+  ST
+
+  @@schema("football")
+}
+
+enum UserRole {
+  ADMIN
+  DEV
+  USER
+  GUEST
+
+  @@schema("football")
+}
+
+enum MatchState {
+  TBP
+  HAPPENING
+  DONE
+
+  @@schema("football")
+}
+
+enum MatchSide {
+  HOME
+  AWAY
+
+  @@schema("main")
+}
+
+enum MatchEvent {
+  GOAL
+  REDCARD
+  YELLOWCARD
+
+  @@schema("football")
+}
+
+//-------------------------------------------------------------------------------------------- MAIN
+
+model User {
+  id String @id
+  email String @unique
+
+  avatar String
+
+  role UserRole
+
+  football football_Player?
+
+  @@schema("main")
+  @@map("user")
+}
+
+//-------------------------------------------------------------------------------------------- FOOTBALL
+
+model football_Player {
+  userId String @unique @map("user_id") @id
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  mmr Int @default(0)
+  mmrIncr Int @default(0) @map("mmr_incr")
+
+  pos PlayerPos @default(value: AM)
+
+  attrib football_Attrib?
+  queue football_Queue?
+
+  events football_MatchEvent[]
+
+  stats football_MatchPlayerStats[]
+
+  @@schema("football")
+  @@map("player")
+}
+
+model football_Attrib {
+  userId String @unique @map("user_id") @id
+  player football_Player @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
+  finishing Int @default(5)
+  passing Int @default(5)
+  dribbling Int @default(5)
+  aerial Int @default(5)
+  marking Int @default(5)
+  goalkeeping Int @default(5)
+  pace Int @default(5)
+  resistance Int @default(5)
+  workRate Int @default(5) @map("work_rate")
+  mentality Int @default(5)
+
+  @@schema("football")
+  @@map("attrib")
+}
+
+model football_Queue {
+  userId String @unique @map("player_user_id") @id
+  player football_Player @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
+  pos PlayerPos
+  mmr Int
+
+  @@schema("football")
+  @@map("queue")
+}
+
+model football_Match {
+  id String @id
+
+  playerStats football_MatchPlayerStats[]
+  teamStats football_MatchTeamStats[]
+  events football_MatchEvent[]
+
+  time DateTime @default(now())
+  //tbp football_MatchTBP[]
+
+  state MatchState @default(value: TBP)
+
+  @@schema("football")
+  @@map("match")
+}
+
+model football_MatchEvent {
+  id String @id
+
+  matchId String @map("match_id")
+  match football_Match @relation(fields: [matchId], references: [id])
+
+  playerId String @map("player_id")
+  player football_Player @relation(fields: [playerId], references: [userId])
+
+  time Float
+  side MatchSide
+  type MatchEvent
+
+
+  @@schema("football")
+  @@map("match_event")
+}
+
+// model football_MatchTBP {
+//   matchId String @map("match_id") @id
+//   match football_Match @relation(fields: [matchId], references: [id])
+
+//   @@schema("football")
+//   @@map("match_tbp")
+// }
+
+model football_MatchPlayerStats {
+  matchId String @map("match_id")
+  match football_Match @relation(fields: [matchId], references: [id])
+
+  playerId String @map("player_id")
+  player football_Player @relation(fields: [playerId], references: [userId])
+
+  side MatchSide
+
+  goals Int @default(0)
+  shots Int @default(0)
+  shotsOnTarget Int @default(0) @map("shots_on_target")
+  blocks Int @default(0)
+  gkSaves Int @default(0) @map("gk_saves")
+  passesAttempted Int @default(0) @map("passes_attempted")
+  passes Int  @default(0)
+  interceptions Int @default(0)
+  tackles Int @default(0)
+  aerials Int @default(0)
+  aerialsWon Int  @default(0) @map("aerials_won")
+  dribblesAttempted Int @default(0) @map("dribbles_attempted")
+  dribbles Int @default(0)
+  cornerKicks Int @default(0) @map("corner_kicks")
+  cleared Int @default(0)
+
+  @@id([matchId, playerId])
+
+  @@schema("football")
+  @@map("match_player_stats")
+}
+
+
+
+model football_MatchTeamStats {
+  matchId String @map("match_id")
+  match football_Match @relation(fields: [matchId], references: [id])
+
+  side MatchSide
+
+  goals Int @default(0)
+  shots Int @default(0)
+  shotsOnTarget Int @default(0) @map("shots_on_target")
+  blocks Int @default(0)
+  gkSaves Int @default(0) @map("gk_saves")
+  passesAttempted Int @default(0) @map("passes_attempted")
+  passes Int  @default(0)
+  interceptions Int @default(0)
+  tackles Int @default(0)
+  aerials Int @default(0)
+  aerialsWon Int  @default(0) @map("aerials_won")
+  dribblesAttempted Int @default(0) @map("dribbles_attempted")
+  dribbles Int @default(0)
+  cornerKicks Int @default(0) @map("corner_kicks")
+  cleared Int @default(0)
+
+  @@id([matchId, side])
+
+  @@schema("football")
+  @@map("match_team_stats")
+}
