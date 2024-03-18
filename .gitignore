@@ -2,3 +2,5 @@
 /src/tests
 
 .env
+
+/dist

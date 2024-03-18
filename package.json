@@ -9,7 +9,8 @@
     "commit": "npx prisma generate && npx prisma db push",
     "test": "jest",
     "test:e2e": "jest --config jest-e2e.config.ts",
-    "dev": "NODE_ENV=development ts-node-dev src/index.ts"
+    "dev": "NODE_ENV=development ts-node-dev src/index.ts",
+    "start": "NODE_ENV=production ts-node src/index.ts"
   },
   "keywords": [],
   "author": "",
