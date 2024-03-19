@@ -31,6 +31,10 @@ export const zUser = z.object({
 
 export type User = z.infer<typeof zUser>;
 
+export const zSetSchJobs = z.object({
+    enable: z.boolean()
+}).strict();
+
 export const zUserSignup = z.object({
     email: z.string().email()
 }).strict();

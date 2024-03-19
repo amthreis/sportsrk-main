@@ -10,13 +10,19 @@ import { UserRole } from "./entities/user";
 import { mustBe } from "./middlewares/must-be";
 
 import cors from "cors";
+import { config } from "dotenv";
 
+config();
 
 const app = express();
 
+// console.log(process.env.CORS_ORIGIN);
+// console.log();
+
+
 app.use(express.json());
 app.use(cors({
-    origin: ["http://localhost:5173"]
+    origin: JSON.parse(process.env.CORS_ORIGIN as string)
 }));
 
 app.use("/common", RtCommon);

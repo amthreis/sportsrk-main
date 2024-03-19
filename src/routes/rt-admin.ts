@@ -6,6 +6,7 @@ import * as adminController from "../controller/ctr-admin";
 const router = Router();
 
 router.post("/add-dev", adminController.addDev);
+router.post("/set-sch-jobs", adminController.setSchJobs);
 
 
 router.delete("/user/delete", adminController.deleteUser);

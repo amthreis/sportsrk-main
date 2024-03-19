@@ -3,5 +3,8 @@ config();
 
 // import repo from "./repo";
 import app from "./app";
+import { scheduleJobs } from "./utils/sch-job";
 
-app.listen(process.env.PORT, () => console.log(`Listening on port ${ process.env.PORT }.`));
+scheduleJobs();
+
+app.listen(process.env.PORT, () => console.log(`Listening on port ${process.env.PORT}.`));

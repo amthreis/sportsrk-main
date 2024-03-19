@@ -4,8 +4,11 @@ services:
   redis:
     container_name: better-sportsrk-redis
     image: redis:alpine
+    command: redis-server --appendonly yes
     ports:
       - 6379:6379
+    volumes:
+      - redis_data:/data
   postgres:
     container_name: better-sportsrk-postgres
     image: postgres
@@ -15,3 +18,5 @@ services:
       POSTGRES_DB: better_sportsk
     ports:
       - 1113:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/

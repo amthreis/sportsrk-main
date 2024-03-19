@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { UserRequest, UserRole, zUserSignup } from "../entities/user";
+import { UserRequest, UserRole, zSetSchJobs, zUserSignup } from "../entities/user";
 import { FootballRepo } from "../repos/repo-football";
 import { UserRepo } from "../repos/repo-user";
 import { zodParse } from "../utils/utils-validation";
@@ -24,6 +24,27 @@ export async function addDev(req: Request, res: Response, next: NextFunction) {
         user: newDev
     });
 }
+
+export async function setSchJobs(req: Request, res: Response, next: NextFunction) {
+    const ureq = (req as unknown) as UserRequest;
+
+    //console.log("---> a ", ureq.user);
+
+    const body = zodParse(zSetSchJobs, req.body);
+
+    try {
+        await redis.lpush("main:sch-jobs", body.enable);
+    }
+    catch (err) {
+        console.log(err);
+        throw new RedisError();
+    }
+
+    res.status(200).json({
+        message: `SchJobs set to ${body.enable}`
+    });
+}
+
 
 export async function setFootballQueueState(req: Request, res: Response, next: NextFunction) {
     const ureq = (req as unknown) as UserRequest;
