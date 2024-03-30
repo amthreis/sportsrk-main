@@ -27,7 +27,7 @@ async function main() {
             pos: anyPos(PlayerPos)
         });
 
-        await FootballRepo.setPlayerMMR(ply, 10_000 + srandom() * 180_000);
+        await FootballRepo.setPlayerMMR(ply, 1000 + srandom() * 9000);
     }
 }
 

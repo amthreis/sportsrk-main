@@ -8,7 +8,7 @@ services:
     ports:
       - 6379:6379
     volumes:
-      - redis_data:/data
+      - /redis_data:/data
   postgres:
     container_name: better-sportsrk-postgres
     image: postgres
@@ -19,4 +19,4 @@ services:
     ports:
       - 1113:5432
     volumes:
-      - postgres_data:/var/lib/postgresql/data/
+      - /postgres_data:/var/lib/postgresql/data/

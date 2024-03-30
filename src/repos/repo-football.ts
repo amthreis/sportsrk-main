@@ -19,7 +19,7 @@ export namespace FootballRepo {
                     'role',  main.user.role,
                     'avatar', main.user.avatar
                 ) as user,
-                mmr, pos,
+                football.player.mmr, pos,
                 json_build_object(
                     'finishing', football.attrib.finishing,
                     'passing', football.attrib.passing,
@@ -204,6 +204,11 @@ export namespace FootballRepo {
 
         const matches = await client.$queryRaw<Match[]>`
             select football.match.*,
+                (
+                    select avg(football.match_player_stats.mmr) 
+                        from football.match_player_stats 
+                    where football.match_player_stats.match_id = football.match.id
+                ) as avgmmr,
                 json_build_object(
                     'teams', array_agg(json_build_object(
                         'matchId', football.match_team_stats.match_id,
@@ -216,7 +221,7 @@ export namespace FootballRepo {
                 where state = 'DONE'
                 group by football.match.id
                 order by time DESC
-                fetch first 1 row with ties;
+                limit 15;
         `;
 
 
@@ -320,7 +325,7 @@ export namespace FootballRepo {
 
         for (const p of data.players) {
             await client.$queryRaw`
-                insert into football.match_player_stats (match_id, player_id, side) values (${m.id}, ${p.user.id}, ${p.side === "AWAY" ? "AWAY" : "HOME"}::"MatchSide");
+                insert into football.match_player_stats (match_id, player_id, side, mmr) values (${m.id}, ${p.user.id}, ${p.side === "AWAY" ? "AWAY" : "HOME"}::"MatchSide", ${p.mmr});
             `;
         }
 

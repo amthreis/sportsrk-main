@@ -1,7 +1,7 @@
 import { MatchState as PrismaMatchState, MatchEvent as PrismaMatchEvent } from '@prisma/client';
 
 import z from "zod";
-import { MatchSide, PlayerStats, PlayerUser, zPlayerAttrib, zPlayerBasic, zPlayerMMRIncr, zPlayerPos, zPlayerSide, zPlayerStats, zPlayerUser, zStats } from './player';
+import { MatchSide, PlayerStats, PlayerUser, zPlayerAttrib, zPlayerBasic, zPlayerMMR, zPlayerMMRIncr, zPlayerPos, zPlayerSide, zPlayerStats, zPlayerUser, zStats } from './player';
 
 export const MatchState = {
     TBP: PrismaMatchState.TBP,
@@ -12,14 +12,15 @@ export const MatchState = {
 export const MatchEvent = {
     GOAL: PrismaMatchEvent.GOAL,
     REDCARD: PrismaMatchEvent.REDCARD,
-    YELLOWCARD: PrismaMatchEvent.YELLOWCARD
+    YELLOWCARD: PrismaMatchEvent.YELLOWCARD,
+    YELLOWREDCARD: PrismaMatchEvent.YELLOWREDCARD
 } as const;
 
 
 export type MatchState = typeof MatchState[keyof typeof MatchState];
 
 export const zCreateFootballMatchData = z.object({
-    players: z.array(zPlayerUser.and(zPlayerSide))
+    players: z.array(zPlayerUser.and(zPlayerSide).and(zPlayerMMR))
 });
 
 export type CreateFootballMatchData = z.infer<typeof zCreateFootballMatchData>;

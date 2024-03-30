@@ -51,6 +51,7 @@ enum MatchEvent {
   GOAL
   REDCARD
   YELLOWCARD
+  YELLOWREDCARD
 
   @@schema("football")
 }
@@ -173,6 +174,8 @@ model football_MatchPlayerStats {
   player football_Player @relation(fields: [playerId], references: [userId])
 
   side MatchSide
+
+  mmr Int @default(0)
 
   goals Int @default(0)
   shots Int @default(0)

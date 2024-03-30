@@ -106,18 +106,19 @@ export async function sendxToQueue(req: Request, res: Response, next: NextFuncti
 
     const rb = zodParse(z.object({ count: z.number() }), req.body);
 
+    console.log("zz");
     const players = await FootballRepo.getAllPlayers(rb.count);
 
-    //console.log("aa");
+    console.log("aa");
     const response = await fetch("http://localhost:8586/", {
         body: JSON.stringify(players),
         method: "POST"
     });
-    //console.log("bb");
+    console.log("bb");
 
     //console.log(response);
     const result = await response.json();
-    //console.log(result);
+    console.log(result);
 
     res.status(200).json(result);
 }

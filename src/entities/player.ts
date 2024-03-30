@@ -71,10 +71,15 @@ export const zPlayerMMRIncr = z.object({
     mmrIncr: z.number()
 });
 
+export const zPlayerMMR = z.object({
+    mmr: z.number()
+});
 
 export const zPlayerSide = z.object({
     side: z.nativeEnum(MatchSide)
 });
+
+
 
 export const zPlayerAttrib = z.object({
     attrib: zAttrib

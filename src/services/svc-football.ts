@@ -8,7 +8,8 @@ import cuid2 from "@paralleldrive/cuid2";
 export async function resolve(m: ResolvedFootballMatch) {
     console.log(`resolved.match: home ${m.home.goals} x ${m.away.goals} away`);
 
-    //console.log("players[0]", m.players[0]);
+    console.log(m.events);
+    //c//onsole.log("players[0]", m.players[0]);
 
     await prisma.$transaction(async (tr) => {
         await tr.football_Match.update({
