@@ -6,6 +6,8 @@ import { CreateFootballMatchData, Match, MatchId, MatchPlayer, MatchPlayers, Mat
 import cuid2 from "@paralleldrive/cuid2";
 import { addMinutes } from "date-fns";
 import { RestError } from "../errors/err-rest";
+import { lpush } from "../redis";
+import { RedisError } from "../errors/err-redis";
 
 export namespace FootballRepo {
     export async function getAllPlayers(limit?: number, offset?: number, tr?: PrismaTransaction): Promise<Player[]> {
@@ -78,7 +80,7 @@ export namespace FootballRepo {
                     'role',  main.user.role,
                     'avatar', main.user.avatar
                 ) as user,
-                mmr, mmr_incr as "mmrIncr", pos
+                football.player.mmr, mmr_incr as "mmrIncr", pos
                 from football.player
                 join main.user on main.user.id = football.player.user_id
                 left join football.attrib on main.user.id = football.attrib.user_id
@@ -93,6 +95,16 @@ export namespace FootballRepo {
         //    throw new PlayerNotFoundError(`<Football> Player.User(${id}) doesn't exist.`);
         //throw new RestError();
         return ply;
+    }
+
+    export async function setFootballQueueState(enable: boolean) {
+        try {
+            await lpush("football:queue:open", enable);
+        }
+        catch (err) {
+            console.log(err);
+            throw new RedisError();
+        }
     }
 
     export async function getInfo(tr?: PrismaTransaction): Promise<any> {

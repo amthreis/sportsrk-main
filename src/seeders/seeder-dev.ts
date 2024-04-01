@@ -13,6 +13,7 @@ async function main() {
 
     await UserRepo.create("admin@m.com", UserRole.ADMIN);
     await UserRepo.create("dev_matheus@m.com", UserRole.DEV);
+    await FootballRepo.setFootballQueueState(false);
 
     for (let i = 0; i < 250; i++) {
         const email = faker.internet.email();

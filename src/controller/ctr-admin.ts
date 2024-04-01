@@ -53,13 +53,7 @@ export async function setFootballQueueState(req: Request, res: Response, next: N
 
     const sqs = zodParse(zAdminSetQueueState, req.body);
 
-    try {
-        await redis.lpush("football:queue:open", sqs.open);
-    }
-    catch (err) {
-        console.log(err);
-        throw new RedisError();
-    }
+    await FootballRepo.setFootballQueueState(sqs.open);
 
     res.status(200).json({
         message: "<football> Queue state updated."
