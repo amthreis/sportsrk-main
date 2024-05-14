@@ -5,9 +5,12 @@ import { faker } from "@faker-js/faker";
 import srandom, { anyPos } from "../utils/srandom";
 import { PlayerPos } from "../entities/player";
 import { FootballRepo } from "../repos/repo-football";
-import prisma from "../prisma";
+import { exit } from "process";
+import * as redis from "../redis";
 
 async function main() {
+
+    console.log("Start seeding...");
 
     const users = [];
 
@@ -30,6 +33,14 @@ async function main() {
 
         await FootballRepo.setPlayerMMR(ply, 1000 + srandom() * 9000);
     }
+
+    await redis.push("main:sch-jobs", false);
+    await FootballRepo.setFootballQueueState(false);
+
+    console.log("... done seeding!");
+
+    exit(0);
 }
+
 
 main();

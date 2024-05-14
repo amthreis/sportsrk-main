@@ -1,4 +1,4 @@
-import express, { NextFunction, Request, Response } from "express";
+import express from "express";
 
 import RtCommon from "./routes/rt-common";
 import RtUser from "./routes/rt-user";

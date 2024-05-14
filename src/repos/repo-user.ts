@@ -5,6 +5,7 @@ import prisma from "../prisma";
 import { User, UserRole } from "../entities/user";
 import { Prisma } from "@prisma/client";
 import { faker } from "@faker-js/faker";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 export namespace UserRepo {
     export async function getAll(): Promise<User[]> {
@@ -89,11 +90,11 @@ export namespace UserRepo {
                 }
             });
 
-            console.log("user", user);
+            //console.log("user", user);
 
             return user;
         } catch (err) {
-            if (err instanceof Prisma.PrismaClientKnownRequestError) {
+            if (err instanceof PrismaClientKnownRequestError) {
                 if (err.code === 'P2002') {
                     throw new UserAlreadyExistsError("There's a User registered with this email already.");
                 }

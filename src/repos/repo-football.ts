@@ -6,8 +6,9 @@ import { CreateFootballMatchData, Match, MatchId, MatchPlayer, MatchPlayers, Mat
 import cuid2 from "@paralleldrive/cuid2";
 import { addMinutes } from "date-fns";
 import { RestError } from "../errors/err-rest";
-import { lpush } from "../redis";
+import { push } from "../redis";
 import { RedisError } from "../errors/err-redis";
+import * as redis from "../redis";
 
 export namespace FootballRepo {
     export async function getAllPlayers(limit?: number, offset?: number, tr?: PrismaTransaction): Promise<Player[]> {
@@ -99,7 +100,7 @@ export namespace FootballRepo {
 
     export async function setFootballQueueState(enable: boolean) {
         try {
-            await lpush("football:queue:open", enable);
+            await push("football:queue:open", enable);
         }
         catch (err) {
             console.log(err);
@@ -111,9 +112,8 @@ export namespace FootballRepo {
         const client = tr || prisma;
 
         const matches = await client.football_Match.findMany();
-
+        const players = await client.football_Player.count();
         const teamStats = await client.football_MatchTeamStats.findMany();
-
 
         const goals = teamStats.map(tS => tS.goals).reduce((acc, curr) => {
             return acc + curr;
@@ -125,6 +125,10 @@ export namespace FootballRepo {
 
 
         return {
+            queue: {
+                state: await redis.peek("football:queue:open"),
+                count: await prisma.football_Queue.count()
+            },
             matches: {
                 all: matches.length,
                 done: matches.filter(m => m.state === MatchState.DONE).length,
@@ -134,7 +138,8 @@ export namespace FootballRepo {
             stats: {
                 goals: goals,
                 tackles: tackles
-            }
+            },
+            players
         };
     }
 

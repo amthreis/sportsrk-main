@@ -10,7 +10,12 @@
     "test": "jest",
     "test:e2e": "jest --config jest-e2e.config.ts",
     "dev": "NODE_ENV=development ts-node-dev src/index.ts",
-    "start": "NODE_ENV=production ts-node src/index.ts"
+    "start": "NODE_ENV=production ts-node src/index.ts",
+    "pre-build-seed": "npx prisma generate && npx prisma db push --force-reset && ts-node ./src/seeders/seeder-dev.ts",
+    "docker:test": "sudo docker compose -f docker/compose.yml -f docker/compose.test.yml --env-file=.env --env-file=.env.test up --build",
+    "docker:dev-seed": "sudo docker compose -f docker/compose.yml -f docker/compose.dev.yml -f docker/compose.dev.seed.yml --env-file=.env up --build",
+    "docker:dev": "sudo docker compose -f docker/compose.yml -f docker/compose.dev.yml --env-file=.env  up  --build",
+    "docker:prod": "sudo docker compose -f docker/compose.yml -f docker/compose.prod.yml up --build"
   },
   "keywords": [],
   "author": "",
@@ -22,9 +27,11 @@
     "@types/node": "^20.11.25",
     "@types/node-cron": "^3.0.11",
     "@types/node-schedule": "^2.1.6",
-    "@types/redis": "^4.0.11",
+    "@types/supertest": "^6.0.2",
+    "supertest": "^7.0.0",
     "ts-node": "^10.9.2",
-    "typescript": "^5.4.2"
+    "typescript": "^5.4.2",
+    "vitest": "^1.6.0"
   },
   "dependencies": {
     "@faker-js/faker": "^8.4.1",

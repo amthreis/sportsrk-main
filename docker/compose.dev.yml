@@ -1,0 +1,16 @@
+services:
+  app:
+    container_name: srk-main
+    build:
+      target: dev
+      context: ../
+      dockerfile: ./docker/Dockerfile
+    image: amthreis/sportsrk-main:compose
+    ports:
+      - ${PORT}:${PORT}
+    volumes:
+      - ../:/app
+      - /app/node_modules
+    depends_on:
+      - db-postgres
+      - db-redis

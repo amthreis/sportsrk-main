@@ -1,10 +1,12 @@
 import { application } from "express";
 import { createClient } from "redis";
+import { RedisError } from "./errors/err-redis";
+import { AnyARecord } from "dns";
 
 export const publisher = createClient({
     socket: {
         port: 6379,
-        host: "localhost"
+        host: "db-redis"
     }
 });
 
@@ -22,11 +24,16 @@ publisher.on("error", (error) => {
     //console.log("---");
 });
 
-export async function lpush(key: string, value: any) {
+export async function push(key: string, value: any) {
     return await publisher.lPush(key, JSON.stringify(value));
 }
 export async function rpop(key: string) {
     return await publisher.rPop(key);
+}
+
+export async function pop(key: string) {
+    const v = await publisher.rPop(key);
+    return v ? JSON.parse(v) : null;
 }
 
 export async function peek(key: string) {
@@ -51,3 +58,4 @@ export async function pub(channel: string, value: any) {
 export async function sub(channel: string, callback: (value: any, ch: string) => void) {
     await listener.subscribe(channel, callback);
 }
+

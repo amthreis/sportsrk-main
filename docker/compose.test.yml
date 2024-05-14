@@ -1,0 +1,30 @@
+
+services:
+  app:
+    container_name: test_app
+    build:
+      target: test
+    depends_on:
+      - db-postgres
+      - db-redis
+      - matchsim
+      - matchmaker
+  matchsim:
+    container_name: test_matchsim
+    image: amthreis/sportsrk-matchsim:main
+    ports:
+      - 8585:8585
+  matchmaker:
+    container_name: test_matchmaker
+    image: amthreis/sportsrk-matchmaker:main
+    ports:
+      - 8586:8586
+  db-redis:
+    container_name: test_db-redis
+    volumes:
+      - /data
+  db-postgres:
+    container_name: test_db-postgres
+    volumes:
+      - /var/lib/postgresql/data/
+    

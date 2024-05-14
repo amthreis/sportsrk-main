@@ -33,7 +33,7 @@ export async function setSchJobs(req: Request, res: Response, next: NextFunction
     const body = zodParse(zSetSchJobs, req.body);
 
     try {
-        await redis.lpush("main:sch-jobs", body.enable);
+        await redis.push("main:sch-jobs", body.enable);
     }
     catch (err) {
         console.log(err);
@@ -85,7 +85,7 @@ export async function sendTBPGamesToSim(req: Request, res: Response, next: NextF
     await redis.clear("football:matches:tbp");
 
     for (let m of matchesTBP) {
-        await redis.lpush("football:matches:tbp", m);
+        await redis.push("football:matches:tbp", m);
     }
 
     await tellPlayerQueueIsReady();
@@ -104,7 +104,7 @@ export async function sendxToQueue(req: Request, res: Response, next: NextFuncti
     const players = await FootballRepo.getAllPlayers(rb.count);
 
     console.log("aa");
-    const response = await fetch("http://localhost:8586/", {
+    const response = await fetch(`http://localhost:${process.env.MATCH_SIM_PORT}/`, {
         body: JSON.stringify(players),
         method: "POST"
     });
@@ -142,8 +142,7 @@ export async function deleteUser(req: Request, res: Response, next: NextFunction
 
 
 async function tellPlayerQueueIsReady() {
-
-    const response = await fetch(`http://localhost:${process.env.MATCH_PLAYER_PORT}/`, {
+    const response = await fetch(`http://localhost:${process.env.MATCH_SIM_PORT}/`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
