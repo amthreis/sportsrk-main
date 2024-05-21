@@ -80,28 +80,17 @@ export async function getLastMatches(req: Request, res: Response, next: NextFunc
 }
 
 export async function matchSimResolve(req: Request, res: Response, next: NextFunction) {
-
-    //console.log(req.body);
-
-    // const result = zResolvedFootballMatch.safeParse(req.body);
-
     const result = zodParse(zResolvedFootballMatch, req.body, "Couldn't parse the resolve matches list.");
 
-    // console.log("1");
+    if (!result.parseOnly) {
+        try {
+            await resolve(result);
+        }
+        catch (error) {
+            console.error(error);
+            return res.status(500).json({ error });
+        }
+    }
 
-    // if (!result.success) {
-    //     console.log(result.error);
-    //     throw new Error("Couldn't parse the resolve matches list.");
-    // }
-
-    //  console.log("2");
-    //const d = result.data;
-
-    //console.log(result);
-
-    await resolve(result);
-
-    //console.log("3");
     res.status(200).json({ message: "ok" });
-
 }

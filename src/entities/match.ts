@@ -72,5 +72,6 @@ export const zResolvedFootballMatch = z.object({
     home: zStats,
     away: zStats,
     players: z.array(zResolvedMatchPlayer),
-    events: z.array(zMatchEvent)
+    events: z.array(zMatchEvent),
+    parseOnly: z.boolean().optional()
 });

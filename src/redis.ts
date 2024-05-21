@@ -5,10 +5,12 @@ import { AnyARecord } from "dns";
 
 export const publisher = createClient({
     socket: {
-        port: 6379,
-        host: "db-redis"
+        port: Number(process.env.REDIS_PORT),
+        host: process.env.REDIS_HOST
     }
 });
+
+console.log(`Connected to redis @ ${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`);
 
 const listener = publisher.duplicate();
 

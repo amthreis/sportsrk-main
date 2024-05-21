@@ -1,0 +1,21 @@
+services:
+  main:
+    container_name: srk-main
+    build:
+      target: prod
+    image: amthreis/sportsrk-main:compose
+    ports:
+      - ${PORT}:${PORT}
+    depends_on:
+      - db-postgres
+      - db-redis
+      - matchsim
+      - matchmaker
+    environment:
+      WAIT_HOSTS: db-postgres:5432, db-redis:6379, matchsim:8585, matchmaker:8586
+  matchsim:
+    container_name: srk-matchsim
+    image: amthreis/sportsrk-matchsim:main
+  matchmaker:
+    container_name: srk-matchmaker
+    image: amthreis/sportsrk-matchmaker:main

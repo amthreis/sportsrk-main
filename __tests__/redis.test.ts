@@ -62,7 +62,7 @@ test("rpop should be able to parse objects", async () => {
     await push("test:my-person", person);
     const value = await peek("test:my-person");
 
-    console.log("person", value);
+    //console.log("person", value);
     expectTypeOf(value).toMatchTypeOf<Person>();
 });
 

@@ -1,6 +1,9 @@
 services:
-  app:
+
+  main:
     container_name: srk-main
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     build:
       target: dev
       context: ../
@@ -14,3 +17,19 @@ services:
     depends_on:
       - db-postgres
       - db-redis
+    environment:
+      - MATCH_MAKER_HOST=matchmaker
+      - REDIS_HOST=db-redis
+      - POSTGRES_HOST=db-postgres
+
+  matchmaker:
+    container_name: srk-matchmaker
+    image: amthreis/sportsrk-matchmaker:dev
+    ports:
+      - ${MATCH_MAKER_PORT}:${MATCH_MAKER_PORT}
+  
+  matchsim:
+    container_name: srk-matchsim
+    image: amthreis/sportsrk-matchsim:dev
+    ports:
+      - ${MATCH_SIM_PORT}:${MATCH_SIM_PORT}

@@ -9,6 +9,7 @@ import { RedisError } from "../errors/err-redis";
 
 import z from "zod";
 import { RestError } from "../errors/err-rest";
+import { writeFileSync } from "fs";
 
 export async function addDev(req: Request, res: Response, next: NextFunction) {
     const ureq = (req as unknown) as UserRequest;
@@ -96,25 +97,38 @@ export async function sendTBPGamesToSim(req: Request, res: Response, next: NextF
 }
 
 export async function sendxToQueue(req: Request, res: Response, next: NextFunction) {
-    const ureq = (req as unknown) as UserRequest;
-
+    //const ureq = (req as unknown) as UserRequest;
     const rb = zodParse(z.object({ count: z.number() }), req.body);
 
-    console.log("zz");
+    //console.log("rb.count = ", rb.count);
     const players = await FootballRepo.getAllPlayers(rb.count);
 
-    console.log("aa");
-    const response = await fetch(`http://localhost:${process.env.MATCH_SIM_PORT}/`, {
-        body: JSON.stringify(players),
-        method: "POST"
-    });
-    console.log("bb");
+    console.log(players);
 
-    //console.log(response);
-    const result = await response.json();
-    console.log(result);
+    //writeFileSync("./players.txt", JSON.stringify(players));
 
-    res.status(200).json(result);
+    const fetchFrom = `http://${process.env.MATCH_MAKER_HOST}:${process.env.MATCH_MAKER_PORT}/`;
+    console.log("now fetch from ", fetchFrom);
+    try {
+        const response = await fetch(fetchFrom, {
+            body: JSON.stringify(players),
+            headers: {
+                ["Content-Type"]: 'application/json',
+            },
+            method: "POST"
+        });
+
+        //console.log("RSEPONSE", response);
+        const result = await response.json();
+        console.log("result from maker", result);
+
+        res.status(200).json(result);
+    }
+    catch (error) {
+        console.error(error);
+    }
+    //console.log("bb");
+
 }
 
 
@@ -142,7 +156,7 @@ export async function deleteUser(req: Request, res: Response, next: NextFunction
 
 
 async function tellPlayerQueueIsReady() {
-    const response = await fetch(`http://localhost:${process.env.MATCH_SIM_PORT}/`, {
+    const response = await fetch(`http://matchsim:${process.env.MATCH_SIM_PORT}/`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
